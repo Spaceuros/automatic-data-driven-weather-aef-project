@@ -1,0 +1,16 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# After Effects specific
+Adobe After Effects Auto-Save/
+*Report.txt
+*.aep~
+
+# Python specific
+__pycache__/
+*.pyc
+
+# Render outputs
+Temperature_Render/
+*.zip

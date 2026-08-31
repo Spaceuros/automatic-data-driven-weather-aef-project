@@ -1,0 +1,122 @@
+[
+    {
+        "Grad": "BEOGRAD",
+        "Temperatura": "23°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "NOVI SAD",
+        "Temperatura": "23°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "KRAGUJEVAC",
+        "Temperatura": "20°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "NIS",
+        "Temperatura": "21°C",
+        "Nebo": "Oblaci"
+    },
+    {
+        "Grad": "SABAC",
+        "Temperatura": "21°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "ZRENJANIN",
+        "Temperatura": "22°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "KRUSEVAC",
+        "Temperatura": "22°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "K MITROVICA",
+        "Temperatura": "20°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "ZAJECAR",
+        "Temperatura": "19°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "SOMBOR",
+        "Temperatura": "21°C",
+        "Nebo": "Sunce-oblaci"
+    },
+    {
+        "Grad": "UZICE",
+        "Temperatura": "18°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "VALJEVO",
+        "Temperatura": "21°C",
+        "Nebo": "Sunce-oblaci"
+    },
+    {
+        "Grad": "SUBOTICA",
+        "Temperatura": "22°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "NEGOTIN",
+        "Temperatura": "19°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "LESKOVAC",
+        "Temperatura": "20°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "VRANJE",
+        "Temperatura": "20°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "LOZNICA",
+        "Temperatura": "20°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "CACAK",
+        "Temperatura": "19°C",
+        "Nebo": "Oblaci"
+    },
+    {
+        "Grad": "NOVI PAZAR",
+        "Temperatura": "17°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "PIROT",
+        "Temperatura": "19°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "KRALJEVO",
+        "Temperatura": "21°C",
+        "Nebo": "Oblaci"
+    },
+    {
+        "Grad": "SJENICA",
+        "Temperatura": "14°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "KOPAONIK",
+        "Temperatura": "16°C",
+        "Nebo": "Sunce"
+    },
+    {
+        "Grad": "ZLATIBOR",
+        "Temperatura": "16°C",
+        "Nebo": "Sunce"
+    }
+]
