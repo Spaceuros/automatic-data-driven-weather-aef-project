@@ -242,7 +242,7 @@ import requests
 import json
 import time
 
-API_KEY = "56585ee2bb9334e6afb6b15ec202e1be"
+API_KEY = "API_KEY"
 BASE_URL = "https://api.openweathermap.org/data/2.5/weather"
 
 gradovi = [
@@ -288,7 +288,7 @@ import requests
 import json
 import time
 
-API_KEY = "01d39cefed4044eea9f215129252302"
+API_KEY = "API_KEY"
 
 CITIES = {
     "BEOGRAD": "Belgrade, Serbia",
