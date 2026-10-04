@@ -52,7 +52,7 @@ def get_weather_condition(code):
             return key
     return "Nepoznato"
 
-# Current directory where the script is located (i.e., inside the (Footage) folder)
+# Current directory where the script is located
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def fetch_weather():
@@ -60,71 +60,69 @@ def fetch_weather():
     print("Fetching weather data from API...")
     
     for city, query in cities.items():
-        response = requests.get(BASE_URL, params={"key": API_KEY, "q": query, "aqi": "no"})
-        if response.status_code == 200:
-            data = response.json()
-            current = data.get("current")
-            if current:
-                temperature = round(current.get("temp_c", 0))
-                condition = current.get("condition")
-                condition_code = condition.get("code") if condition else None
-                sky = get_weather_condition(condition_code) if condition_code else "Nepoznato"
-                
-                # Keep keys in Serbian ("Grad", "Temperatura", "Nebo") for AE JSON import
-                results.append({
-                    "Grad": city,
-                    "Temperatura": f"{temperature}°C",
-                    "Nebo": sky
-                })
-            else:
-                # If no data is available
-                results.append({
-                    "Grad": city,
-                    "Temperatura": "N/A",
-                    "Nebo": "Nepoznato"
-                })
-                print(f"No current data for {city}")
-        else:
-            # If API request fails
-            results.append({
-                "Grad": city,
-                "Temperatura": "N/A",
-                "Nebo": "Nepoznato"
-            })
-            print(f"Request error for {city} - status code {response.status_code}")
+        try:
+            # Dodat timeout parametar za slucaj slabe konekcije
+            response = requests.get(BASE_URL, params={"key": API_KEY, "q": query, "aqi": "no"}, timeout=10)
             
-    # Save the JSON file in the exact same directory as this script
+            if response.status_code == 200:
+                data = response.json()
+                current = data.get("current")
+                
+                if current:
+                    # Ispravljena obrada nedostajuce temperature
+                    temp_val = current.get("temp_c")
+                    if temp_val is not None:
+                        temperature = f"{round(temp_val)}°C"
+                    else:
+                        temperature = "---"
+                        
+                    condition = current.get("condition")
+                    condition_code = condition.get("code") if condition else None
+                    sky = get_weather_condition(condition_code) if condition_code else "Nepoznato"
+                    
+                    results.append({
+                        "Grad": city,
+                        "Temperatura": temperature,
+                        "Nebo": sky
+                    })
+                else:
+                    # Nema current objekta u odgovoru
+                    results.append({"Grad": city, "Temperatura": "---", "Nebo": "Nepoznato"})
+                    print(f"No current data for {city}")
+            else:
+                # API vratio grešku (npr. 400, 401, 403, 500)
+                results.append({"Grad": city, "Temperatura": "---", "Nebo": "Nepoznato"})
+                print(f"Request error for {city} - status code {response.status_code}")
+                
+        # Hvatanje mrežnih grešaka (nema interneta, API pao, timeout istekao)
+        except requests.exceptions.RequestException as e:
+            results.append({"Grad": city, "Temperatura": "---", "Nebo": "Nepoznato"})
+            print(f"Network error for {city}: {e}")
+            
+    # Save the JSON file
     json_path = os.path.join(CURRENT_DIR, "weather_data.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
         
     print(f"Weather data successfully saved to {json_path}!")
 
-# Run the fetch function
 fetch_weather()
 
 # ==========================================
 # AFTER EFFECTS HEADLESS RENDER AUTOMATION
 # ==========================================
 
-# NOTE: Change this path if using Windows or a different AE version
 AERENDER_PATH = "/Applications/Adobe After Effects 2026/aerender"
-
-# Go one level up (Parent Directory) to find the AEP file in the main folder
 PARENT_DIR = os.path.dirname(CURRENT_DIR)
 PROJECT_PATH = os.path.join(PARENT_DIR, "TEMPERATURE.aep")
 
-# Create the render folder in the main directory (Parent Directory)
 RENDER_FOLDER = os.path.join(PARENT_DIR, "Temperature_Render")
 OUTPUT_PATH = os.path.join(RENDER_FOLDER, "TEMPERATURE_LOOP_[#####].png")
 COMP_NAME = "Temperature" 
 
 def start_render():
-    # Create the output directory if it doesn't exist
     os.makedirs(RENDER_FOLDER, exist_ok=True)
-    
     print("Starting After Effects headless render...")
-    
     command = [
         AERENDER_PATH,
         "-project", PROJECT_PATH,
@@ -132,7 +130,6 @@ def start_render():
         "-output", OUTPUT_PATH,
         "-OMtemplate", "Temperature"  
     ]
-    
     try:
         subprocess.run(command, check=True)
         print("PNG sequence successfully rendered!")
@@ -144,13 +141,11 @@ def start_render():
         print("Cleaning up the original render folder...")
         shutil.rmtree(RENDER_FOLDER)
         print("Process complete! Your ZIP file is ready in the project directory.")
-        
     except subprocess.CalledProcessError as e:
         print(f"Render error occurred: {e}")
     except Exception as e:
         print(f"An error occurred during zipping or cleanup: {e}")
 
-# Run the render function
 start_render()
 
 
