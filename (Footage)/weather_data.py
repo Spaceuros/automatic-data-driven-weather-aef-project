@@ -7,7 +7,7 @@ import shutil
 
 # Replace with your own WeatherAPI key
 API_KEY = "YOUR_API_KEY_HERE"
-BASE_URL = "http://api.weatherapi.com/v1/current.json"
+BASE_URL = "https://api.weatherapi.com/v1/current.json"
 
 # City list - Keys are used in After Effects, values are search queries
 cities = {
@@ -41,9 +41,11 @@ cities = {
 weather_conditions = {
     "Sunce": [1000],
     "Sunce-oblaci": [1003],
-    "Oblaci": [1006, 1009, 1030, 1135, 1147, 1063, 1066, 1069, 1072, 1087, 1150, 1153, 1180, 1183, 1186, 1198, 1204, 1210, 1213, 1216, 1240, 1249, 1255, 1261, 1273, 1279],
-    "Kisa": [1189, 1192, 1195, 1201, 1243, 1246, 1276],
-    "Sneg": [1114, 1117, 1219, 1222, 1225, 1207, 1252, 1258, 1282]
+    "Oblaci": [1006, 1009, 1030, 1135, 1147],
+    "Kisa": [1063, 1072, 1087, 1150, 1153, 1168, 1171, 1180, 1183, 1186, 1189, 1192, 1195, 1198,
+             1201, 1240, 1243, 1246, 1273, 1276],
+    "Sneg": [1066, 1069, 1114, 1117, 1204, 1207, 1210, 1213, 1216, 1219, 1222, 1225, 1237, 1249,
+             1252, 1255, 1258, 1261, 1264, 1279, 1282]
 }
 
 def get_weather_condition(code):
@@ -52,7 +54,6 @@ def get_weather_condition(code):
             return key
     return "Nepoznato"
 
-# Current directory where the script is located
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def fetch_weather():
@@ -61,7 +62,6 @@ def fetch_weather():
     
     for city, query in cities.items():
         try:
-            # Dodat timeout parametar za slucaj slabe konekcije
             response = requests.get(BASE_URL, params={"key": API_KEY, "q": query, "aqi": "no"}, timeout=10)
             
             if response.status_code == 200:
@@ -69,7 +69,6 @@ def fetch_weather():
                 current = data.get("current")
                 
                 if current:
-                    # Ispravljena obrada nedostajuce temperature
                     temp_val = current.get("temp_c")
                     if temp_val is not None:
                         temperature = f"{round(temp_val)}°C"
@@ -86,20 +85,16 @@ def fetch_weather():
                         "Nebo": sky
                     })
                 else:
-                    # Nema current objekta u odgovoru
                     results.append({"Grad": city, "Temperatura": "---", "Nebo": "Nepoznato"})
                     print(f"No current data for {city}")
             else:
-                # API vratio grešku (npr. 400, 401, 403, 500)
                 results.append({"Grad": city, "Temperatura": "---", "Nebo": "Nepoznato"})
                 print(f"Request error for {city} - status code {response.status_code}")
                 
-        # Hvatanje mrežnih grešaka (nema interneta, API pao, timeout istekao)
         except requests.exceptions.RequestException as e:
             results.append({"Grad": city, "Temperatura": "---", "Nebo": "Nepoznato"})
             print(f"Network error for {city}: {e}")
             
-    # Save the JSON file
     json_path = os.path.join(CURRENT_DIR, "weather_data.json")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
@@ -128,19 +123,26 @@ def start_render():
         "-project", PROJECT_PATH,
         "-comp", COMP_NAME,
         "-output", OUTPUT_PATH,
-        "-OMtemplate", "Temperature"  
+        "-OMtemplate", "Temperature"
     ]
     try:
         subprocess.run(command, check=True)
+
+        rendered_files = [f for f in os.listdir(RENDER_FOLDER) if f.lower().endswith(".png")]
+        if not rendered_files:
+            print("Render error occurred: no PNG files were generated. Zipping skipped.")
+            return
         print("PNG sequence successfully rendered!")
-        
+
         print("Zipping the render folder...")
         shutil.make_archive(RENDER_FOLDER, 'zip', RENDER_FOLDER)
         print(f"Folder successfully zipped into {os.path.basename(RENDER_FOLDER)}.zip!")
-        
+
         print("Cleaning up the original render folder...")
         shutil.rmtree(RENDER_FOLDER)
         print("Process complete! Your ZIP file is ready in the project directory.")
+    except FileNotFoundError as e:
+        print(f"Render error occurred - file not found: {e}")
     except subprocess.CalledProcessError as e:
         print(f"Render error occurred: {e}")
     except Exception as e:
